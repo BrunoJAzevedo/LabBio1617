@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 """
-Created on Mon Dec 22 11:59:58 2014
-
-@author: Nuno
+    Cria os ficheiros Blast numa directoria de nome Blast
+    Permite que o utilizador coloque o locus tag que pretende fazer blast 
+    Ou então correr o blast para todos os locus tag no ficheiro genbank.gb
 """
 
 import os
@@ -49,12 +48,32 @@ if answer == "1" or answer == "Uma" or answer == "UMA" or answer == "uma":
     """
     ofile = open('./Blast/blast_%s.xml' %gene, 'w')
     print "A executar o blast"
-    handler = NCBIWWW.qblast('blastp','swisprot',seq.features_protein["Sequence"][aux].format('gb'))
+    handler = NCBIWWW.qblast('blastp','nr',seq.features_protein["Sequence"][aux])
     ofile.write(handler.read())
-    ofile.write('\n\n')
     ofile.close()
     handler.close()
 
+
+    resultxml = open('./Blast/blast_%s.xml' %gene, 'r')
+    blast= NCBIXML.parse(resultxml)
+
+    idsGoodBlast = []
+
+    E_VALUE_THRESH = 0.5
+    SCORE = 95
+    for blast_record in blast:
+        print blast_record.alignments
+        for alignment in blast_record.alignments:
+            print alignment
+            for hsp in alignment.hsps:
+                print(str(hsp))
+                if hsp.expect < E_VALUE_THRESH and hsp.score> SCORE:
+                    print("NICE\n\tE_VALUE_THRESH: " + str(hsp.expect) + " SCORE: " + str(hsp.score))
+                    data = (alignment.title.split("|")[3],hsp.expect,hsp.score)
+                    idsGoodBlast.append(data)
+                    matches +=1
+                    
+    print idsGoodBlast
 
 
 else:
@@ -70,63 +89,8 @@ else:
     for gene in seq.features_gene["Locus_tag"]:
         print "A executar o blast para: " + seq.features_gene["Locus_tag"][indice]
         save_file = open('./Blast/blast_%s.xml' %gene, 'w')
-        handler = NCBIWWW.qblast('blastp','swisprot',protein_record["Sequence"][indice].format('gb'))
+        handler = NCBIWWW.qblast('blastp','nr',protein_record["Sequence"][indice])
         save_file.write(handler.read())
-        save_file.write('\n\n')
         save_file.close()
         handler.close()
         indice += 1
-"""
-verify = open('./Blast/blast_%s_verification.txt' %gene, 'w')
-E_VALUE_THRESH = 0.05
-result = open('./Blast/blast_%s.xml' %gene, 'r')
-records = NCBIXML.parse(result)
-
-for record in records:
-    for alignment in record.alignments:
-        for hsp in alignment.hsps:
-            if hsp.expect < E_VALUE_THRESH:
-                verify.write('****Alignment***\n')
-                verify.write('sequence: %s' %alignment.title)
-                verify.write('length: %i' %alignment.length)
-                verify.write('e value: %f' %hsp.expect)
-                verify.write(hsp.query[0:75] + '...')
-                verify.write(hsp.query[0:75] + '...')
-                verify.write(hsp.match[0:75] + '...')
-                verify.write(hsp.match[0:75] + '...')
-                verify.write(hsp.sbjct[0:75] + '...')
-                verify.write('\n')
-
-verify.close()
-result.close()
-"""
-"""
-#execução do blast
-save_file = open('blast_%s.xml' %gene, 'w')
-result_handle = NCBIWWW.qblast('blastp', 'swissprot', protein_record.format('gb'))
-save_file.write(result_handle.read())
-save_file.write('\n\n')
-save_file.close()
-result_handle.close()
-
-
-verify = open('blast_%s_verificacao.txt' %gene, 'w')
-E_VALUE_THRESH = 0.05
-result = open('blast_%s.xml' %gene,'r')
-records = NCBIXML.parse(result)
-for record in records:
-    for alignment in record.alignments:
-        for hsp in alignment.hsps:
-            if hsp.expect < E_VALUE_THRESH:
-                verify.write('****Alignment****\n')
-                verify.write('sequence: %s' %alignment.title)
-                verify.write('length: %i' %alignment.length)
-                verify.write('e value: %f' %hsp.expect)
-                verify.write(hsp.query[0:75] + '...')
-                verify.write(hsp.match[0:75] + '...')
-                verify.write(hsp.sbjct[0:75] + '...')
-                verify.write('\n')
-verify.close()
-result.close()
-
-"""

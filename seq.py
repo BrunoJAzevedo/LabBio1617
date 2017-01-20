@@ -1,6 +1,4 @@
-"""
-    Creates a genbank file and a fasta file with the genomes 2610801 to 2873800
-"""
+#Cria um ficheiro genbank para os genomas de 2610801 ate 2873800
 
 """
     Imports
@@ -46,13 +44,13 @@ def sizeSequence(tamanho):
     lista=[]
     x=[]
     resultado=[]
-    for i in xrange (len(tamanho)):
+    for i in range (len(tamanho)):
         x=tamanho[i]
         lista.extend(x + '-')
         i+=1
 
     contador=0
-    for i in xrange (len(lista)):
+    for i in range (len(lista)):
         if (lista[i]!='-'):
             contador+=1
 
@@ -73,7 +71,6 @@ features_gene["Locus_tag"] = []
 features_gene["Gene"] = []
 
 features_protein = {}
-#features_protein["GeneID"] = []
 features_protein["Name"] = []
 features_protein["Protein_id"] = []
 features_protein["Size"] = []
@@ -99,7 +96,6 @@ for feature in file.features:
     # only CDS for getting the proteins info
     if feature.type == "CDS":
         features_protein["Location"].append(feature.location)
-        #features_protein["GeneID"].append(feature.qualifiers["db_xref"][0].replace("GeneID:",""))
         features_protein["Protein_id"].append(feature.qualifiers["protein_id"][0])
         features_protein["Sequence"].append(feature.qualifiers["translation"][0])
         features_protein["Size"] = sizeSequence(features_protein["Sequence"])
@@ -121,7 +117,6 @@ for feature in file.features:
 
     if feature.type == "tRNA" or feature.type == "misc_feature":
         features_protein["Location"].append("")
-        #features_protein["GeneID"].append("")
         features_protein["Protein_id"].append("")
         features_protein["Sequence"].append("")
         features_protein["Size"] = 0
@@ -154,7 +149,6 @@ style2 = xlwt.easyxf("font: name Cambria; align: wrap on, vert centre, horiz cen
     (line, column, data, style)
 """
 ws.write(0,0,'GeneID',style1)
-#ws.write(0,1,'Accession Number',style1)
 ws.write(0,1,'Locus Tag',style1)
 ws.write(0,2,'Gene Name',style1)
 ws.write(0,3,'Strand',style1)
@@ -162,13 +156,9 @@ ws.write(0,4,'Uniprot ID',style1)
 ws.write(0,5,'Revision Grade',style1)
 ws.write(0,6,'Accession Number Protein',style1)
 ws.write(0,7,'Protein Name',style1)
-#ws.write(0,8,'Amino Acids',style1)
 ws.write(0,8,'Amino Acids Number',style1)
-#ws.write(0,10,'Cellular Location',style1)
-#ws.write(0,11,'GeneOntology',style1)
 ws.write(0,9,'EC_Number',style1)
 ws.write(0,10,'Description',style1)
-#ws.write(0,14,'Comments',style1)
 
 """
     Unkown functions table
@@ -177,7 +167,6 @@ uf = xlwt.Workbook()
 us = uf.add_sheet('Unkown Functions')
 
 us.write(0,0,'GeneID',style1)
-#us.write(0,1,'Accession Number',style1)
 us.write(0,1,'Locus Tag',style1)
 us.write(0,2,'Gene Name',style1)
 us.write(0,3,'Strand',style1)
@@ -185,19 +174,16 @@ us.write(0,4,'Uniprot ID',style1)
 us.write(0,5,'Revision Grade',style1)
 us.write(0,6,'Accession Number Protein',style1)
 us.write(0,7,'Protein Name',style1)
-#us.write(0,8,'Amino Acids',style1)
 us.write(0,8,'Amino Acids Number',style1)
-#us.write(0,10,'Cellular Location',style1)
-#us.write(0,11,'GeneOntology',style1)
 us.write(0,9,'EC_Number',style1)
 us.write(0,10,'Description',style1)
-#us.write(0,14,'Comments',style1)
+
 
 
 """
     Changing the width of all colunms
 """
-for x in xrange(0,15):
+for x in range(0,15):
         ws.col(x).width = 256 * 50
         us.col(x).width = 256 * 50
 
@@ -209,7 +195,7 @@ for x in xrange(0,15):
 
 unknown_functions_counter = 1 #counter to know what line to insere in the unknown functions table
 
-for x in xrange(1,len(features_gene["GeneID"]) + 1):
+for x in range(1,len(features_gene["GeneID"]) + 1):
     aux = x - 1
     """
         Deleting the (+) or (-) in the location
